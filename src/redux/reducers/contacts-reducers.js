@@ -2,28 +2,27 @@ import { createReducer } from '@reduxjs/toolkit'
 import { combineReducers } from 'redux'
 import {
   addContact,
-  removeContact,
+  deleteContact,
   changeFilter,
 } from '../actions/contacts-actions'
+// import * as contactsActions from '../actions/contacts-actions'
+import { fetchContacts } from '../operations/contacts-operations'
 
 const items = createReducer([], {
-  [addContact]: (state, actions) => {
-    const checkName = state
-      .map((contact) => contact.name)
-      .includes(actions.payload.name)
-    const checkNumber = state
-      .map((contact) => contact.number)
-      .includes(actions.payload.number)
+  [fetchContacts.fulfilled]: (_, action) => action.payload,
+  [addContact.fulfilled]: (_, action) => action.payload,
+  [deleteContact.fulfilled]: (_, action) => action.payload,
+})
 
-    if (checkName) {
-      alert(`${actions.payload.name} is already in contacts`)
-    } else if (checkNumber) {
-      alert(`Number ${actions.payload.number} is already in contacts`)
-    } else [...state, actions.payload]
-  },
-  [removeContact]: (state, actions) => [
-    state.filter(({ id }) => id !== actions.payload),
-  ],
+const isLoading = createReducer(false, {
+  [fetchContacts.pending]: () => true,
+  [fetchContacts.fulfilled]: () => false,
+  [fetchContacts.rejected]: () => false,
+})
+
+const error = createReducer(null, {
+  [fetchContacts.rejected]: (_, action) => action.payload,
+  [fetchContacts.fulfilled]: () => null,
 })
 
 const filter = createReducer('', {
@@ -32,5 +31,7 @@ const filter = createReducer('', {
 
 export default combineReducers({
   items,
+  isLoading,
   filter,
+  error,
 })

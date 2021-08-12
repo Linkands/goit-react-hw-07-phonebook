@@ -4,25 +4,32 @@ import Contacts from './components/Contacts/Contacts'
 import Filter from './components/Filter/Filter'
 import { v4 as uuidv4 } from 'uuid'
 import { useDispatch, useSelector } from 'react-redux'
-import { addContact, deleteContact } from './redux/slices/items'
-import { changeFilter } from './redux/slices/filter'
+import * as contactsOperations from './redux/operations/contacts-operations'
+import * as contactsActions from './redux/actions/contacts-actions'
+
+// import { addContact, deleteContact } from './redux/slices/items'
+// import { changeFilter } from './redux/slices/filter'
 
 function App() {
-  const contactsItems = useSelector((state) => state.items)
-  const filterItems = useSelector((state) => state.filter)
+  const contactsItems = useSelector((state) => state.contacts.items)
+  const filterItems = useSelector((state) => state.contacts.filter)
   const dispatch = useDispatch()
+  console.log(contactsItems)
 
-  const mounted = useRef(false)
   const [name, setName] = useState('')
   const [number, setNumber] = useState('')
 
+  // useEffect(() => {
+  // if (!mounted.current) {
+  //   mounted.current = true
+  //   return
+  // }
+  //   localStorage.setItem('contacts', JSON.stringify(contactsItems))
+  // }, [contactsItems])
+
   useEffect(() => {
-    if (!mounted.current) {
-      mounted.current = true
-      return
-    }
-    localStorage.setItem('contacts', JSON.stringify(contactsItems))
-  }, [contactsItems])
+    dispatch(contactsOperations.fetchContacts())
+  }, [])
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -34,7 +41,7 @@ function App() {
         setNumber(value)
         break
       case 'filter':
-        dispatch(changeFilter(value))
+        dispatch(contactsActions.changeFilter(value))
         break
 
       default:
@@ -45,8 +52,8 @@ function App() {
   const handleSubmit = (e) => {
     e.preventDefault()
     const randomId = uuidv4()
-    dispatch(addContact({ id: randomId, name, number }))
-    localStorage.setItem('contacts', JSON.stringify(contactsItems))
+    dispatch(contactsOperations.addContact({ id: randomId, name, number }))
+    // localStorage.setItem('contacts', JSON.stringify(contactsItems))
     eraseInputs()
   }
 
@@ -56,7 +63,7 @@ function App() {
   }
 
   const removeContact = (id) => {
-    dispatch(deleteContact(id))
+    dispatch(contactsOperations.deleteContact(id))
   }
 
   const visibleContacts = () => {
@@ -74,11 +81,15 @@ function App() {
         name={name}
         number={number}
       ></Phonebook>
-      <Filter filter={filterItems} onChange={handleChange}></Filter>
-      <Contacts
-        contactsData={visibleContacts()}
-        onDeleteContact={removeContact}
-      ></Contacts>
+      {contactsItems.length > 0 && (
+        <>
+          <Filter filter={filterItems} onChange={handleChange}></Filter>
+          <Contacts
+            contactsData={visibleContacts()}
+            onDeleteContact={removeContact}
+          ></Contacts>
+        </>
+      )}
     </div>
   )
 }
