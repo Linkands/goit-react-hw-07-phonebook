@@ -1,3 +1,1 @@
-Phonebook app. 	
-States are managed by Redux toolkit 	
-Backend is realised as local json server	
+<b>Phonebook</b> app. <br>States are managed by <b>Redux toolkit</b>. <br>Backend is realised as local json server.
