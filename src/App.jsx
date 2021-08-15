@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import Phonebook from './components/Phonebook/Phonebook'
 import Contacts from './components/Contacts/Contacts'
 import Filter from './components/Filter/Filter'
@@ -7,29 +7,17 @@ import { useDispatch, useSelector } from 'react-redux'
 import * as contactsOperations from './redux/operations/contacts-operations'
 import * as contactsActions from './redux/actions/contacts-actions'
 
-// import { addContact, deleteContact } from './redux/slices/items'
-// import { changeFilter } from './redux/slices/filter'
-
 function App() {
   const contactsItems = useSelector((state) => state.contacts.items)
   const filterItems = useSelector((state) => state.contacts.filter)
   const dispatch = useDispatch()
-  console.log(contactsItems)
 
   const [name, setName] = useState('')
   const [number, setNumber] = useState('')
 
-  // useEffect(() => {
-  // if (!mounted.current) {
-  //   mounted.current = true
-  //   return
-  // }
-  //   localStorage.setItem('contacts', JSON.stringify(contactsItems))
-  // }, [contactsItems])
-
   useEffect(() => {
     dispatch(contactsOperations.fetchContacts())
-  }, [])
+  }, [dispatch])
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -53,7 +41,6 @@ function App() {
     e.preventDefault()
     const randomId = uuidv4()
     dispatch(contactsOperations.addContact({ id: randomId, name, number }))
-    // localStorage.setItem('contacts', JSON.stringify(contactsItems))
     eraseInputs()
   }
 
