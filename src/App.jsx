@@ -40,6 +40,13 @@ function App() {
   const handleSubmit = (e) => {
     e.preventDefault()
     const randomId = uuidv4()
+    if (
+      contactsItems.find(
+        (contact) => contact.name.toLowerCase() === name.toLowerCase(),
+      )
+    ) {
+      return alert(`${name} already exists in your contacts`)
+    }
     dispatch(contactsOperations.addContact({ id: randomId, name, number }))
     eraseInputs()
   }
